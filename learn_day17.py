@@ -46,23 +46,34 @@ print("  say_hello = add_frame(say_hello)")
 
 # ---- 1.3 带参数的函数装饰 ----
 # 原函数有参数，wrapper 也要接收同样的参数
+# 例子：给商品算价格之前，先判断会员等级
 
-def log_call(func):
-    """装饰器：记录函数被调用了，参数是什么"""
-    def wrapper(name, age):
-        print(f"  [日志] 调用了 {func.__name__}({name}, {age})")
-        return func(name, age)
+def apply_discount(func):
+    """装饰器：根据会员等级打折"""
+    def wrapper(price, level):
+        if level == "VIP":
+            print(f"  VIP会员：打8折")
+            price = price * 0.8
+        elif level == "普通":
+            print(f"  普通会员：打9.5折")
+            price = price * 0.95
+        else:
+            print(f"  非会员：不打折")
+        # 把打折后的价格传给原函数
+        return func(price, level)
     return wrapper
 
-@log_call
-def introduce(name, age):
-    print(f"  我叫{name}，今年{age}岁。")
+@apply_discount
+def show_final_price(price, level):
+    """显示最终价格"""
+    print(f"  实付：{price:.1f}元")
 
 print("\n1.3 带参数的装饰器：")
-introduce("小明", 18)
-# 输出：
-#   [日志] 调用了 introduce(小明, 18)
-#   我叫小明，今年18岁。
+show_final_price(100, "VIP")
+print()
+show_final_price(100, "普通")
+print()
+show_final_price(100, "非会员")
 
 # ---- 1.4 通用装饰器（*args, **kwargs） ----
 # 用可变参数，不管原函数有几个参数，装饰器都能通用
